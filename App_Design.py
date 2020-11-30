@@ -10,6 +10,10 @@ from PyQt5 import QtWidgets,uic
 #Importamos modulos para computo cientifico
 import numpy as np
 
+#Importamos las liberías pertinentes para el trabajo con la base de datos
+import sqlite3 as sql
+import pandas as pd
+
 #Importamos el modulo 'funciones.py' diseñadas
 from Funciones import *
 
@@ -42,6 +46,49 @@ def Paso2():
     dlg2.lineEdit.setText(dlg.lineEdit_8.text())
     dlg2.lineEdit.setReadOnly(True)
     
+########################################################################### 
+####################### Trabajo con la base de datos ######################
+
+conn = sql.connect('PruebaDB.db')
+data = pd.read_sql('SELECT MOS FROM Codecs_DataBase', conn)
+#print(data)
+cursor = conn.cursor()
+tablamos=[]
+numero=0
+minimo=float("inf")
+print("Connected to SQLite")
+MOS=0
+
+sqlite_select_query = """SELECT * from Codecs_DataBase"""
+cursor.execute(sqlite_select_query)
+records = cursor.fetchall()
+print("El total de filas es:  ", len(records))
+print("Imprimiendo filas")
+for row in records:
+    print("Códec: ", row[0])
+    print("Bit Rate(kbps): ", row[1]) 
+    print("Sample size(B): ", row[2])
+    print("SampleInterval(ms): ", row[3])
+    print("MOS: ", row[4])
+    tablamos.append(row[4])
+    print("VPS(ms): ", row[5])
+    print("BW MP: ", row[6])
+    print("BW w/cTTP MP: ", row[7])
+    print("BW Ethernet(kbps): ", row[8])
+    print("PPS: ", row[9])
+    print("\n")
+
+    cursor.close()
+    
+
+for elemento in tablamos:
+    if(elemento>MOS):
+        diferencia=elemento-MOS
+        if(diferencia<minimo and diferencia>=0):
+            minimo=diferencia
+            indice=tablamos.index(elemento)
+            mejorMos=tablamos[indice]
+            print(mejorMos)
 
 ###########################################################################
 ################## PROGRAMACION BACK-END ##################################
