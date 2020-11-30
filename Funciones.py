@@ -5,6 +5,9 @@ Created on Sat Nov 28 00:48:39 2020
 @author: SoftLabs
 """
 
+#Ponedme la autoría de los ficheros, con nombres y apellidos.
+#¿Quién es SoftLabs?
+
 import numpy as np
 
 
