@@ -18,7 +18,6 @@ import pandas as pd
 from Funciones import *
 
 # Calculo de GoS número de líneas en una ventana adicional #################
-
 def Paso4():
     dlg4.show()    
     
@@ -35,64 +34,52 @@ def Paso4():
     dlg4.TraficoBHT.setReadOnly(True)
     
     dlg4.lineEdit_3.setText(str(Erlang_B2(BHT,float(dlg.lineEdit_9.text()))))
-    dlg4.lineEdit_3.setReadOnly(True)
+    dlg4.lineEdit_3.setReadOnly(True)   
 ########################################################################### 
     
 def Paso2():  
-    dlg2.show() 
+    dlg2.show()   
     
+    global Codecs_parametros
     MOS=float(dlg.lineEdit_8.text())
     
+    conn = sql.connect('DataBaseMOS.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM Codecs_DataBase where MOS >=' + str(MOS))
+    records = cursor.fetchall()
+    
+    
+    
+    Codecs_parametros=np.zeros((len(records),9))
+    Codecs=list()
+    
+    #Agrupo todos los codecs en una lista y sus parámetros en una matriz
+    z=0
+    
+    for raw in records:        
+          Codecs.append(raw[0])
+          for j in range(1,10):             
+              Codecs_parametros[z,j-1]=float(raw[j])
+          z+=1
+            
     dlg2.lineEdit.setText(dlg.lineEdit_8.text())
-    dlg2.lineEdit.setReadOnly(True)
+    dlg2.lineEdit.setReadOnly(True)   
+##########################################################################
+
+def Paso3():
     
-########################################################################### 
-####################### Trabajo con la base de datos ######################
-
-conn = sql.connect('PruebaDB.db')
-data = pd.read_sql('SELECT MOS FROM Codecs_DataBase', conn)
-#print(data)
-cursor = conn.cursor()
-tablamos=[]
-numero=0
-minimo=float("inf")
-print("Connected to SQLite")
-MOS=0
-
-sqlite_select_query = """SELECT * from Codecs_DataBase"""
-cursor.execute(sqlite_select_query)
-records = cursor.fetchall()
-print("El total de filas es:  ", len(records))
-print("Imprimiendo filas")
-for row in records:
-    print("Códec: ", row[0])
-    print("Bit Rate(kbps): ", row[1]) 
-    print("Sample size(B): ", row[2])
-    print("SampleInterval(ms): ", row[3])
-    print("MOS: ", row[4])
-    tablamos.append(row[4])
-    print("VPS(ms): ", row[5])
-    print("BW MP: ", row[6])
-    print("BW w/cTTP MP: ", row[7])
-    print("BW Ethernet(kbps): ", row[8])
-    print("PPS: ", row[9])
-    print("\n")
-
-    cursor.close()
+    Jitter=float(dlg.lineEdit_11.text())
+    Retardo_red=float(dlg.lineEdit_10.text())
     
-
-for elemento in tablamos:
-    if(elemento>MOS):
-        diferencia=elemento-MOS
-        if(diferencia<minimo and diferencia>=0):
-            minimo=diferencia
-            indice=tablamos.index(elemento)
-            mejorMos=tablamos[indice]
-            print(mejorMos)
-
+    global Retardos_codecs
+    Retardos_codecs=np.zeros((len(Codecs_parametros[:,0]),2))                         
+           
+            
 ###########################################################################
 ################## PROGRAMACION BACK-END ##################################
 ###########################################################################
+
+                             
 
 app=QtWidgets.QApplication([])
 
@@ -107,10 +94,13 @@ dlg.lineEdit_5.setPlaceholderText("Probabilidad entre 0-1")
 dlg.lineEdit_9.setPlaceholderText("0-1")
 
 
-
-
 dlg.pushButton.clicked.connect(Paso2) # Pops new window when pushed
-dlg2.pushButton.clicked.connect(Paso4)
+
+
+
+dlg2.pushButton.clicked.connect(Paso3)
+
+
 
 dlg.show()
 app.exec()
