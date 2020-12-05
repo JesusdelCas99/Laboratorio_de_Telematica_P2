@@ -16,8 +16,8 @@
   <widget class="QLabel" name="label">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>130</y>
+     <x>280</x>
+     <y>110</y>
      <width>22</width>
      <height>16</height>
     </rect>
@@ -29,33 +29,33 @@
   <widget class="QLineEdit" name="lineEdit">
    <property name="geometry">
     <rect>
-     <x>181</x>
-     <y>130</y>
-     <width>221</width>
-     <height>20</height>
+     <x>260</x>
+     <y>150</y>
+     <width>101</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>
   <widget class="QLabel" name="label_2">
    <property name="geometry">
     <rect>
-     <x>140</x>
-     <y>156</y>
+     <x>120</x>
+     <y>110</y>
      <width>35</width>
      <height>16</height>
     </rect>
    </property>
    <property name="text">
-    <string>CODEC</string>
+    <string>Códec</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit_2">
    <property name="geometry">
     <rect>
-     <x>181</x>
-     <y>156</y>
-     <width>221</width>
-     <height>20</height>
+     <x>90</x>
+     <y>150</y>
+     <width>101</width>
+     <height>21</height>
     </rect>
    </property>
   </widget>

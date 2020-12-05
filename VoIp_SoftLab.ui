@@ -173,9 +173,9 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>63</x>
-      <y>236</y>
-      <width>121</width>
+      <x>40</x>
+      <y>350</y>
+      <width>171</width>
       <height>21</height>
      </rect>
     </property>
@@ -185,7 +185,7 @@
      </font>
     </property>
     <property name="text">
-     <string>Conexión WAN (Tcwan)</string>
+     <string>Ancho de Banda SIPTRUNK (BWst)</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_7">
@@ -419,7 +419,7 @@
      </font>
     </property>
     <property name="text">
-     <string>QoS</string>
+     <string>GoS</string>
     </property>
    </widget>
    <widget class="Line" name="line_12">
@@ -574,7 +574,7 @@
      </font>
     </property>
     <property name="text">
-     <string>GoE</string>
+     <string>QoE</string>
     </property>
    </widget>
    <widget class="Line" name="line_19">
@@ -600,7 +600,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>75</string>
+     <string>30</string>
     </property>
    </widget>
    <widget class="Line" name="line_20">
@@ -708,7 +708,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>30</string>
+     <string>75</string>
     </property>
    </widget>
    <widget class="QPushButton" name="pushButton">
@@ -725,58 +725,6 @@
     </property>
     <property name="autoDefault">
      <bool>false</bool>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_19">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>259</y>
-      <width>121</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>6</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Tipo de encapsulación en la</string>
-    </property>
-   </widget>
-   <widget class="QLabel" name="label_20">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>269</y>
-      <width>131</width>
-      <height>21</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>6</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>conexión del SIPTRUNK</string>
-    </property>
-   </widget>
-   <widget class="QFrame" name="frame_2">
-    <property name="geometry">
-     <rect>
-      <x>60</x>
-      <y>260</y>
-      <width>118</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="frameShape">
-     <enum>QFrame::Box</enum>
-    </property>
-    <property name="frameShadow">
-     <enum>QFrame::Sunken</enum>
     </property>
    </widget>
    <widget class="QLabel" name="label_21">
@@ -1059,6 +1007,19 @@
      <number>57</number>
     </property>
    </widget>
+   <widget class="QLineEdit" name="lineEdit_3">
+    <property name="geometry">
+     <rect>
+      <x>220</x>
+      <y>350</y>
+      <width>113</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>4</string>
+    </property>
+   </widget>
    <zorder>frame</zorder>
    <zorder>lineEdit</zorder>
    <zorder>label</zorder>
@@ -1103,9 +1064,6 @@
    <zorder>label_18</zorder>
    <zorder>lineEdit_11</zorder>
    <zorder>pushButton</zorder>
-   <zorder>label_19</zorder>
-   <zorder>label_20</zorder>
-   <zorder>frame_2</zorder>
    <zorder>label_21</zorder>
    <zorder>comboBox</zorder>
    <zorder>comboBox_2</zorder>
@@ -1118,6 +1076,7 @@
    <zorder>comboBox_4</zorder>
    <zorder>comboBox_5</zorder>
    <zorder>spinBox</zorder>
+   <zorder>lineEdit_3</zorder>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>

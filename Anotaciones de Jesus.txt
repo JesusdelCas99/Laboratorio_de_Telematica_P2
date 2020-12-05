@@ -1,11 +1,4 @@
-El ancho de banda cual es? Nos lo dan o como va eso?
 
-He considerado que cRTP comprime IP/UDP/RTP a 4B aunque en teoria es <=4Bytes
+
 
 He tenido siempre en cuenta el checksum como 4Bytes, sea cual sea el paquete
-
-Falta añadir el retardo de look_ahead a la base datos. Por defecto, para que compile el
-código he puesto un valor constante para todos los Codecs
-
-En la base datos no se ha añadido el VPS, aunque lo he inferido en los calculos gracias 
-a otros parámetros
