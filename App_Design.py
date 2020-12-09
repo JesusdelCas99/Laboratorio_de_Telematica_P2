@@ -5,6 +5,10 @@ Created on Wed Nov 25 15:00:46 2020
 @author: SoftLabs
 """
 
+#Importamos libreria para obtener la fecha actual
+import calendar
+import time
+
 from PyQt5 import QtWidgets,uic
 
 #Importamos modulos para computo cientifico
@@ -16,8 +20,27 @@ import pandas as pd
 
 #Importamos el modulo 'funciones.py' diseñadas
 from Funciones import *
+
+from datetime import datetime, timedelta, date
   
 ########################################################################### 
+def CrearArchivo(ruta):
+    
+    print("Creando archivo")
+    archivo = open (ruta,"a") 
+    
+    return archivo
+    
+def GuardarDatos(textoArchivo):
+    archivo = open (ruta,"a")
+    
+     # Variable de fecha de hoy
+    today = datetime.now()
+
+    # Fecha en la q se genera el archivo
+    archivo.write(str(datetime.now()) + "\n")
+    
+    archivo.write(textoArchivo)
     
 def Paso0():
     
@@ -28,6 +51,9 @@ def Paso0():
 
 def Paso2(): 
     
+    textoArchivo = ""
+    textoArchivo = "====Paso 2==============\n"
+    
     dlg.close()
     dlg2.show()   
     
@@ -36,6 +62,7 @@ def Paso2():
     global MOS
     
     MOS=dlg.comboBox_2.currentText()
+    textoArchivo += "MOS=" + str(MOS) + "\n"
     
     if MOS=='Excelente':
         MOS=5
@@ -69,34 +96,45 @@ def Paso2():
               Codecs_parametros[z,j-1]=float(raw[j])
           z+=1
             
-         
+       
     dlg2.lineEdit_2.setText(Codecs[0])
     dlg2.lineEdit_2.setReadOnly(True)        
           
     dlg2.lineEdit.setText(dlg.comboBox_2.currentText())
     dlg2.lineEdit.setReadOnly(True)   
+    GuardarDatos(textoArchivo) #Guardamos datos obtenidos. 
+    
+    
 ##########################################################################
 
 def Paso3():
     
-     
+    
     global Retardo_total
     global R_final
     global dim #Numero de Codecs seleccionados
-
+    
+    textoArchivo = ""
+    textoArchivo = "====Paso 3========\n"
     
     Jitter=float(dlg.lineEdit_11.text())*1e-3
+    textoArchivo += "Jitter=" + str(Jitter) + "\n"
     Retardo_red=float(dlg.lineEdit_10.text())*1e-3
+    textoArchivo += "Retardo_red=" + str(Retardo_red) + "\n"
     Retardo_VoIp=dlg.comboBox.currentText()
+    textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
     Retardo_G114=dlg.comboBox_3.currentText()
+    textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
     
                        
     if Retardo_VoIp=='Aceptable':
         Retardo_VoIp=150*1e-3
+        textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
     elif Retardo_VoIp=='Moderado':
         Retardo_VoIp=400*1e-3
     else:
         Retardo_VoIp=1
+        
         
     
     if Retardo_G114=='Muy satisfecho':
@@ -132,6 +170,7 @@ def Paso3():
     dlg3.lineEdit_13.setReadOnly(True)
     
     Retardo_total=min(Retardo_G114,Retardo_VoIp)
+    textoArchivo += "Retardo_total=" + str(Retardo_total) + "\n"
     
     #En los retardos de origen no consideramos los de señalizacion
     #Introducimos el efecto de pipelining en el retardo
@@ -187,11 +226,14 @@ def Paso3():
             
     dlg3.lineEdit_2.setText(str(R_final[0]) + " ms")
     dlg3.lineEdit_2.setReadOnly(True)
-                                    
+           
+    GuardarDatos(textoArchivo)                         
            
 # Calculo de GoS número de líneas en una ventana adicional #################
 def Paso4():
     
+    textoArchivo = ""
+    textoArchivo = "====Paso 4========\n"
     #Mostramos la ventana referente al paso 4
     dlg3.close()
     dlg4.show()    
@@ -205,12 +247,19 @@ def Paso4():
     #Cargamos los parametros como variables flotantes para su tratamiento 
     #matematico
     Nc=float(dlg.lineEdit.text())
+    textoArchivo += "Numero_clientes=" + str(Nc) + "\n"
     NI=float(dlg.lineEdit_2.text())
+    textoArchivo += "Numero_lineas=" + str(NI) + "\n"
     Tpll=float(dlg.lineEdit_4.text())
+    textoArchivo += "Tiempo_medio_llamada=" + str(Tpll) + "\n"
     Pll=float(dlg.lineEdit_5.text())
+    textoArchivo += "Probabilidad_llamada=" + str(Pll) + "\n"
+    
     
     #Calculamos el Busy Hour Traffic
     BHT=(Nc*NI*Tpll*Pll)/60
+    textoArchivo += "Busy Hour Traffic=" + str(BHT) + "\n"
+    
     dlg4.TraficoBHT.setText(str(BHT) + " Erlangs")
     dlg4.TraficoBHT.setReadOnly(True)
     
@@ -218,7 +267,7 @@ def Paso4():
     N_lineas=Erlang_B2(BHT,float(dlg.lineEdit_9.text()))
     dlg4.lineEdit_3.setText(str(N_lineas))
     dlg4.lineEdit_3.setReadOnly(True) 
-    
+    GuardarDatos(textoArchivo) 
 
 def Paso5():
     
@@ -360,6 +409,19 @@ def Paso6():
     dlg6.show()
     
     dlg6.comboBox.addItems(Codecs)
+    
+
+def Paso7():
+    
+    dlg6.close()
+    dlg7.show()
+    
+    Ruta=(dlg.lineEdit_paso7.text())
+    print("La ruta es:",Ruta)
+    
+    
+
+    
            
 ###########################################################################
 ################## PROGRAMACION BACK-END ##################################
@@ -367,6 +429,9 @@ def Paso6():
 
                             
 app=QtWidgets.QApplication([])
+
+ruta="/Users/mariaesperilla/Desktop/ARCHIVOS/Exportar.txt" #Insertar ruta donde crear archivo
+archivo= CrearArchivo(ruta)
 
 #Cargamos el archivo '.ui' diseñado mediante Qt Designer
 dlg=uic.loadUi("VoIp_SoftLab.ui")
@@ -377,6 +442,7 @@ dlg3=uic.loadUi("Paso3.ui")
 dlg4=uic.loadUi("Paso4.ui")
 dlg5=uic.loadUi("Paso5.ui")
 dlg6=uic.loadUi("Paso6a.ui")
+dlg7=uic.loadUi("Paso7.ui")
 
 
 #Placeholders, ¿usar en otros campos?
@@ -402,7 +468,10 @@ dlg5.pushButton_3.clicked.connect(Paso0)
 
 dlg5.pushButton_2.clicked.connect(Paso6)
 
+dlg5.pushButton.clicked.connect(Paso7)
+
 
 
 dlg.show()
 app.exec()
+archivo.close()
