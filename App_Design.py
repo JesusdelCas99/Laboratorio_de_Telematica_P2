@@ -8,6 +8,7 @@ Created on Wed Nov 25 15:00:46 2020
 #Importamos libreria para obtener la fecha actual
 import calendar
 import time
+from datetime import datetime, timedelta, date
 
 from PyQt5 import QtWidgets,uic
 
@@ -21,12 +22,7 @@ import pandas as pd
 #Importamos el modulo 'funciones.py' diseñadas
 from Funciones import *
 
-from datetime import datetime, timedelta, date
 
-
-global textoArchivo_def
-    
-  
 ########################################################################### 
 def CrearArchivo(Ruta_archivo):
     
@@ -45,7 +41,7 @@ def CrearArchivo(Ruta_archivo):
     
 def GuardarDatos(textoArchivo, Ruta_archivo):
     
-    print("aBRIENDO ARCHIVO " + Ruta_archivo)
+    # print("aBRIENDO ARCHIVO " + Ruta_archivo)
     
     archivo = open (Ruta_archivo,"a")
     
@@ -53,7 +49,7 @@ def GuardarDatos(textoArchivo, Ruta_archivo):
     today = datetime.now()
 
     # Fecha en la q se genera el archivo
-    archivo.write("\n" +"los datos se han guardado: " + str(datetime.now()) + "\n")
+    # archivo.write("\n" +"los datos se han guardado: " + str(datetime.now()) + "\n")
     
     archivo.write(textoArchivo)
     archivo.close()
@@ -64,11 +60,10 @@ def Paso0():
     dlg.show()
 
 
-
 def Paso2(): 
     
     textoArchivo = ""
-    textoArchivo += "\n===Paso 2======================\n"
+    textoArchivo += "\n===============Paso 2===============\n"
     textoArchivo += "\n---Parametros de entrada QoE---\n"
      
     dlg.close()
@@ -78,6 +73,7 @@ def Paso2():
     global Codecs
     global MOS
     global textoArchivo_def
+    
     textoArchivo_def = ""
     
     
@@ -133,12 +129,9 @@ def Paso2():
     dlg2.lineEdit.setText(dlg.comboBox_2.currentText())
     dlg2.lineEdit.setReadOnly(True)  
     
-    # GuardarDatos(textoArchivo) #Guardamos datos obtenidos en texto. 
-    textoArchivo_def += textoArchivo
-    print("TEXTO ARCHIVO DEF", textoArchivo_def)
     
-    # return textoArchivo_def
-    # GuardarDatos(textoArchivo_def)
+    textoArchivo_def += textoArchivo
+    
     
 ##########################################################################
 
@@ -149,12 +142,12 @@ def Paso3():
     global R_final
     global dim #Numero de Codecs seleccionados
     global textoArchivo_def
-    # textoArchivo_def = ""
+    
     
     textoArchivo = ""
-    textoArchivo += "\n======Paso 3=====================\n"
+    textoArchivo += "\n===============Paso 3===============\n"
     
-    textoArchivo += "\n---Parametros de entrada QoS----\n"
+    textoArchivo += "\n---Parametros de entrada QoS----\n\n"
     
     
     Jitter=float(dlg.lineEdit_11.text())*1e-3
@@ -226,7 +219,7 @@ def Paso3():
     dlg3.lineEdit_13.setReadOnly(True)
     
     
-    textoArchivo += "\n---Resultados parciales---\n"
+    textoArchivo += "\n---Resultados parciales---\n\n"
     
     Retardo_total=min(Retardo_G114,Retardo_VoIp)
     textoArchivo += "Retardo_total=" + str(Retardo_total) + "\n"
@@ -248,27 +241,39 @@ def Paso3():
         
         #Cargamos el retardo de look ahead de la base de datos
         n_look_ahead=Codecs_parametros[i][9]*1e-3
+        textoArchivo += "\nRetardo_look_ahead=" + str(n_look_ahead) + "\n" 
         
         #Retraso de paquetizacion
         VPS=Codecs_parametros[i][4]/((Codecs_parametros[i][0])*1e-3)
+        textoArchivo += "VPS=" + str(R_final[i]) + "\n" 
+        print("VPS",VPS)
         R_final[i]=VPS
+        textoArchivo += "Retraso_paquetizacion=" + str(R_final[i]) + "\n" 
         
         #Retraso algoritmico
         R_final[i]=R_final[i]+n_look_ahead
+        textoArchivo += "Retraso_algoritmico=" + str(R_final[i]) + "\n" 
+        print("Rfinal",R_final[i])
         
         #Tiempo de ejecucion de la compresion. Consideramos un 10% de CSI
         #por trama
         R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]
+        textoArchivo += "Consideramos Tiempo_ejecucion =" + str(R_final[i]) + "\n" 
+        print("Tejercucion",R_final[i])
         
         #Añadimos el retardo de red
         R_final[i]=R_final[i]+Retardo_red
+        textoArchivo += "Añadiendo el retardo de red=" + str(R_final[i]) + "\n" 
+        
         
         #Retardo de decodificacion
         R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]
+        textoArchivo += "Retardo de red ofrecido=" + str(R_final[i]) + "\n" 
         
         #Retardo de buffer antijitter
         R_fin1=int((1.5*Jitter)/VPS)*VPS+R_final[i]
         R_fin2=int((2*Jitter)/VPS)*VPS+R_final[i]
+        
         
         #En caso de obtener para los dos tamaños de buffer antijitter un 
         #retardo que entre dentro de las cotas, escogemos el que tenga mayor
@@ -278,18 +283,22 @@ def Paso3():
             
             #Numero de paquetes a almacenar por el buffer antijitter
             Storage_P[i]=int((2*Jitter)/VPS)
+            textoArchivo += "Numero de paquetes a almacenar=" + str(Storage_P[i]) + "\n" 
         else:
             R_final[i]=R_fin1
             
             #Numero de paquetes a almacenar por el buffer antijitter
             Storage_P[i]=int((1.5*Jitter)/VPS)
-            
+            textoArchivo += "Numero de paquetes a almacenar=" + str(Storage_P[i]) + "\n" 
+    
+    textoArchivo += "VPS=" + str(VPS) + "\n" 
+        
     dlg3.lineEdit_2.setText(str(R_final[0]) + " ms")
     dlg3.lineEdit_2.setReadOnly(True)
            
-    # GuardarDatos(textoArchivo)   
+      
     textoArchivo_def += textoArchivo   
-    # GuardarDatos(textoArchivo_def)                   
+                      
            
 # Calculo de GoS número de líneas en una ventana adicional #################
 def Paso4():
@@ -298,7 +307,7 @@ def Paso4():
     # textoArchivo_def = ""
     
     textoArchivo = ""
-    textoArchivo += "====Paso 4========\n"
+    textoArchivo += "\n===============Paso 4===============\n"
     #Mostramos la ventana referente al paso 4
     dlg3.close()
     dlg4.show()    
@@ -309,6 +318,7 @@ def Paso4():
     #Definimos el numero de lineas como variable global
     global N_lineas
     
+    textoArchivo += "\n---Parametros de entrada ----\n\n"
     #Cargamos los parametros como variables flotantes para su tratamiento 
     #matematico
     Nc=float(dlg.lineEdit.text())
@@ -320,7 +330,7 @@ def Paso4():
     Pll=float(dlg.lineEdit_5.text())
     textoArchivo += "Probabilidad_llamada=" + str(Pll) + "\n"
     
-    
+    textoArchivo += "\n---Resultados parciales ----\n\n"
     #Calculamos el Busy Hour Traffic
     BHT=(Nc*NI*Tpll*Pll)/60
     textoArchivo += "Busy Hour Traffic=" + str(BHT) + "\n"
@@ -331,12 +341,13 @@ def Paso4():
     #Calculamos el numero de lineas en base a la funcion Erlang_B2
     N_lineas=Erlang_B2(BHT,float(dlg.lineEdit_9.text()))
     textoArchivo += "Numero de lineas=" + str(N_lineas) + "\n"
+    
     dlg4.lineEdit_3.setText(str(N_lineas))
     dlg4.lineEdit_3.setReadOnly(True) 
     
-    # GuardarDatos(textoArchivo) 
+    
     textoArchivo_def += textoArchivo
-    # GuardarDatos(textoArchivo_def)
+    
 
 def Paso5():
     
@@ -344,7 +355,7 @@ def Paso5():
     # textoArchivo_def = ""
     
     textoArchivo = ""
-    textoArchivo += "====Paso 5==========\n"
+    textoArchivo += "\n===============Paso 5===============\n"
     #Mostramos la ventana referente al paso 5
     dlg4.close()
     dlg5.show()
@@ -362,9 +373,11 @@ def Paso5():
     #Variable para controlar si es necesario Paso6
     Nocumple=0
     
+    textoArchivo += "\n---Parametros de entrada ----\n\n"
+    
     #Calculamos el ancho de banda global
     Bandwidth=(float(dlg.lineEdit_3.text()))*1e6
-    textoArchivo += "Bandwidth=" + str(Bandwidth) + "\n"
+    textoArchivo += "Ancho de banda SIPTRUNK=" + str(Bandwidth) + "\n"
     
     #Extraemos de la GUI los parametros de cabeceras del paquete
     P_Enlace=dlg.comboBox_4.currentText()
@@ -372,18 +385,26 @@ def Paso5():
     P_Tuneles=dlg.comboBox_5.currentText()
     
     B_W_percentage=float(dlg.lineEdit_7.text()) 
+    textoArchivo += "Ancho de banda de reserva=" + str(Bandwidth) + "\n"
     
                          
   
     
     if P_Tuneles=='MPLS':
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
         P_Tuneles=4
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
     elif P_Tuneles=='L2TP':
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
         P_Tuneles=24
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
     elif P_Tuneles=='IPSEC':
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
         P_Tuneles=float(dlg.SpinBox.text())
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
     else:
         P_Tuneles=0
+        textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
         
         
     if P_Enlace=='Ethernet 802.1q':
@@ -408,7 +429,7 @@ def Paso5():
         textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         
         
-    
+    textoArchivo += "\n---Resultados Parciales ----\n\n"
     #Calculamos la longitud de la cabecera para RTP y cRTP que sera 
     #la misma para todos los Codecs. Para el caso de cRTP consideramos
     #que comprime IP/UDP/RTP a un total de 4B. Las colas asociadas al checksum
@@ -491,9 +512,9 @@ def Paso5():
         dlg5.label_6.show()
         dlg5.label_7.show()
 
-    # GuardarDatos(textoArchivo) 
+    
     textoArchivo_def += textoArchivo
-    # GuardarDatos(textoArchivo_def)
+    
 
 def Paso6():
     
@@ -529,9 +550,6 @@ def Paso7():
                             
 app=QtWidgets.QApplication([])
 
-
-textoArchivo = ""
-# textoArchivo_def = ""
 
 #Cargamos el archivo '.ui' diseñado mediante Qt Designer
 dlg=uic.loadUi("VoIp_SoftLab.ui")
@@ -572,13 +590,7 @@ dlg5.pushButton.clicked.connect(Paso7)
 
 dlg7.pushButton.clicked.connect(Paso7)
 
-# GuardarDatos(textoArchivo, Ruta_archivo)
-# ruta="/Users/mariaesperilla/Desktop/ARCHIVOS/Exportar3.txt" #Insertar ruta donde crear archivo
-
-
-
-
 
 dlg.show()
 app.exec()
-# archivo.close()
+
