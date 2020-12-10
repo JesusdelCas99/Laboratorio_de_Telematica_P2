@@ -22,25 +22,41 @@ import pandas as pd
 from Funciones import *
 
 from datetime import datetime, timedelta, date
+
+
+global textoArchivo_def
+    
   
 ########################################################################### 
-def CrearArchivo(ruta):
+def CrearArchivo(Ruta_archivo):
     
     print("Creando archivo")
-    archivo = open (ruta,"a") 
+    archivo = open (Ruta_archivo,"a") 
     
-    return archivo
-    
-def GuardarDatos(textoArchivo):
-    archivo = open (ruta,"a")
-    
+
      # Variable de fecha de hoy
     today = datetime.now()
 
     # Fecha en la q se genera el archivo
-    archivo.write(str(datetime.now()) + "\n")
+    archivo.write("\n" +"El archivo se ha creado: " +  str(datetime.now()) + "\n")
+
+    
+    return archivo
+    
+def GuardarDatos(textoArchivo, Ruta_archivo):
+    
+    print("aBRIENDO ARCHIVO " + Ruta_archivo)
+    
+    archivo = open (Ruta_archivo,"a")
+    
+      # Variable de fecha de hoy
+    today = datetime.now()
+
+    # Fecha en la q se genera el archivo
+    archivo.write("\n" +"los datos se han guardado: " + str(datetime.now()) + "\n")
     
     archivo.write(textoArchivo)
+    archivo.close()
     
 def Paso0():
     
@@ -52,28 +68,37 @@ def Paso0():
 def Paso2(): 
     
     textoArchivo = ""
-    textoArchivo = "====Paso 2==============\n"
-    
+    textoArchivo += "\n===Paso 2======================\n"
+    textoArchivo += "\n---Parametros de entrada QoE---\n"
+     
     dlg.close()
     dlg2.show()   
     
     global Codecs_parametros
     global Codecs
     global MOS
+    global textoArchivo_def
+    textoArchivo_def = ""
+    
     
     MOS=dlg.comboBox_2.currentText()
     textoArchivo += "MOS=" + str(MOS) + "\n"
     
     if MOS=='Excelente':
         MOS=5
+        textoArchivo += "MOS=" + str(MOS) + "\n"
     elif MOS=='Bueno':
         MOS=4
+        textoArchivo += "MOS=" + str(MOS) + "\n"
     elif MOS=='Aceptable':
         MOS=3
+        textoArchivo += "MOS=" + str(MOS) + "\n"
     elif MOS=='Bajo':
         MOS=2
+        textoArchivo += "MOS=" + str(MOS) + "\n"
     else:
         MOS=1
+        textoArchivo += "MOS=" + str(MOS) + "\n"
 
     #Seleccionamos de la base de datos los codecs que tengan MOS que satisfaga 
     #el QoE introducido por el usuario
@@ -82,7 +107,7 @@ def Paso2():
     cursor.execute('SELECT * FROM Codecs_DataBase where MOS >=' + str(MOS))
     records = cursor.fetchall()
     
-    
+    textoArchivo += "\n---Codecs validos---\n"
     
     Codecs_parametros=np.zeros((len(records),10))
     Codecs=list()
@@ -94,6 +119,11 @@ def Paso2():
           Codecs.append(raw[0])
           for j in range(1,11):             
               Codecs_parametros[z,j-1]=float(raw[j])
+              
+          print("codec",Codecs_parametros[z])   
+          
+          print("Codecs validos",raw[0]) 
+          textoArchivo +=  str(raw[0]) + "\n"
           z+=1
             
        
@@ -101,9 +131,14 @@ def Paso2():
     dlg2.lineEdit_2.setReadOnly(True)        
           
     dlg2.lineEdit.setText(dlg.comboBox_2.currentText())
-    dlg2.lineEdit.setReadOnly(True)   
-    GuardarDatos(textoArchivo) #Guardamos datos obtenidos. 
+    dlg2.lineEdit.setReadOnly(True)  
     
+    # GuardarDatos(textoArchivo) #Guardamos datos obtenidos en texto. 
+    textoArchivo_def += textoArchivo
+    print("TEXTO ARCHIVO DEF", textoArchivo_def)
+    
+    # return textoArchivo_def
+    # GuardarDatos(textoArchivo_def)
     
 ##########################################################################
 
@@ -113,40 +148,61 @@ def Paso3():
     global Retardo_total
     global R_final
     global dim #Numero de Codecs seleccionados
+    global textoArchivo_def
+    # textoArchivo_def = ""
     
     textoArchivo = ""
-    textoArchivo = "====Paso 3========\n"
+    textoArchivo += "\n======Paso 3=====================\n"
+    
+    textoArchivo += "\n---Parametros de entrada QoS----\n"
+    
     
     Jitter=float(dlg.lineEdit_11.text())*1e-3
     textoArchivo += "Jitter=" + str(Jitter) + "\n"
+    
     Retardo_red=float(dlg.lineEdit_10.text())*1e-3
     textoArchivo += "Retardo_red=" + str(Retardo_red) + "\n"
+    
     Retardo_VoIp=dlg.comboBox.currentText()
-    textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
+    
     Retardo_G114=dlg.comboBox_3.currentText()
-    textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
+    
     
                        
     if Retardo_VoIp=='Aceptable':
+        textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
         Retardo_VoIp=150*1e-3
         textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
     elif Retardo_VoIp=='Moderado':
+        textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
         Retardo_VoIp=400*1e-3
+        textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
     else:
         Retardo_VoIp=1
+        textoArchivo += "Retardo_VoIp=" + str(Retardo_VoIp) + "\n"
         
         
     
     if Retardo_G114=='Muy satisfecho':
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         Retardo_G114=200*1e-3
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
     elif Retardo_G114=='Satisfecho':
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         Retardo_G114=287.5*1e-3
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
     elif Retardo_G114=='Alguno insatisfecho':
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         Retardo_G114=387.5*1e-3
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
     elif Retardo_G114=='Mucho insatisfecho':
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         Retardo_G114=550*1e-3
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
     elif Retardo_G114=='Casi todos insatisfechos':
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         Retardo_G114=1
+        textoArchivo += "Retardo_G114=" + str(Retardo_G114) + "\n"
         
                 
     #Mostramos la ventana referente al paso 3
@@ -169,6 +225,9 @@ def Paso3():
     dlg3.lineEdit_13.setText(str(Retardo_VoIp*1e3) + " ms")
     dlg3.lineEdit_13.setReadOnly(True)
     
+    
+    textoArchivo += "\n---Resultados parciales---\n"
+    
     Retardo_total=min(Retardo_G114,Retardo_VoIp)
     textoArchivo += "Retardo_total=" + str(Retardo_total) + "\n"
     
@@ -176,6 +235,7 @@ def Paso3():
     #Introducimos el efecto de pipelining en el retardo
     
     dim=len(Codecs_parametros)
+    
     
     #Inicializamos vector para el retardo total acumulado
     R_final=np.zeros((dim,1))
@@ -227,13 +287,18 @@ def Paso3():
     dlg3.lineEdit_2.setText(str(R_final[0]) + " ms")
     dlg3.lineEdit_2.setReadOnly(True)
            
-    GuardarDatos(textoArchivo)                         
+    # GuardarDatos(textoArchivo)   
+    textoArchivo_def += textoArchivo   
+    # GuardarDatos(textoArchivo_def)                   
            
 # Calculo de GoS número de líneas en una ventana adicional #################
 def Paso4():
     
+    global textoArchivo_def
+    # textoArchivo_def = ""
+    
     textoArchivo = ""
-    textoArchivo = "====Paso 4========\n"
+    textoArchivo += "====Paso 4========\n"
     #Mostramos la ventana referente al paso 4
     dlg3.close()
     dlg4.show()    
@@ -265,12 +330,21 @@ def Paso4():
     
     #Calculamos el numero de lineas en base a la funcion Erlang_B2
     N_lineas=Erlang_B2(BHT,float(dlg.lineEdit_9.text()))
+    textoArchivo += "Numero de lineas=" + str(N_lineas) + "\n"
     dlg4.lineEdit_3.setText(str(N_lineas))
     dlg4.lineEdit_3.setReadOnly(True) 
-    GuardarDatos(textoArchivo) 
+    
+    # GuardarDatos(textoArchivo) 
+    textoArchivo_def += textoArchivo
+    # GuardarDatos(textoArchivo_def)
 
 def Paso5():
     
+    global textoArchivo_def
+    # textoArchivo_def = ""
+    
+    textoArchivo = ""
+    textoArchivo += "====Paso 5==========\n"
     #Mostramos la ventana referente al paso 5
     dlg4.close()
     dlg5.show()
@@ -290,10 +364,13 @@ def Paso5():
     
     #Calculamos el ancho de banda global
     Bandwidth=(float(dlg.lineEdit_3.text()))*1e6
+    textoArchivo += "Bandwidth=" + str(Bandwidth) + "\n"
     
     #Extraemos de la GUI los parametros de cabeceras del paquete
     P_Enlace=dlg.comboBox_4.currentText()
+    
     P_Tuneles=dlg.comboBox_5.currentText()
+    
     B_W_percentage=float(dlg.lineEdit_7.text()) 
     
                          
@@ -310,15 +387,25 @@ def Paso5():
         
         
     if P_Enlace=='Ethernet 802.1q':
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         P_Enlace=20
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
     elif P_Enlace=='Ethernet q-inq':
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         P_Enlace=22
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
     elif P_Enlace=='PPP':
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         P_Enlace=6
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
     elif P_Enlace=='PPOE':
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         P_Enlace=24
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
     elif P_Enlace=='Ethernet': 
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         P_Enlace=18
+        textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         
         
     
@@ -327,7 +414,9 @@ def Paso5():
     #que comprime IP/UDP/RTP a un total de 4B. Las colas asociadas al checksum
     #siguen presentes en cRTP
     L_RTP_Cabeceras=int(P_Enlace) + int(P_Tuneles) + 20 + 8 + 12 + 4
+    textoArchivo += "L_RTP_Cabeceras=" + str(L_RTP_Cabeceras) + "\n"
     L_cRTP_Cabeceras=int(P_Enlace) + int(P_Tuneles) + 4 + 4
+    textoArchivo += "L_cRTP_Cabeceras=" + str(L_cRTP_Cabeceras) + "\n"
     
     #Calculamos el ancho de banda para los dos posibles casos: RTP y cRTP
     #CASO 1: RTP: Tendremos en cuenta el checksum (4bytes)
@@ -401,7 +490,10 @@ def Paso5():
         dlg5.pushButton_3.show()
         dlg5.label_6.show()
         dlg5.label_7.show()
-    
+
+    # GuardarDatos(textoArchivo) 
+    textoArchivo_def += textoArchivo
+    # GuardarDatos(textoArchivo_def)
 
 def Paso6():
     
@@ -416,8 +508,15 @@ def Paso7():
     dlg6.close()
     dlg7.show()
     
-    Ruta=(dlg.lineEdit_paso7.text())
-    print("La ruta es:",Ruta)
+    #dlg7.pushButton.hide()
+    Ruta_archivo=str(dlg7.lineEdit_paso7.text())
+    
+    if Ruta_archivo != '':
+        CrearArchivo(Ruta_archivo)
+        GuardarDatos(textoArchivo_def, Ruta_archivo)
+    print("La ruta es:",Ruta_archivo)
+    
+    return Ruta_archivo
     
     
 
@@ -430,8 +529,9 @@ def Paso7():
                             
 app=QtWidgets.QApplication([])
 
-ruta="/Users/mariaesperilla/Desktop/ARCHIVOS/Exportar.txt" #Insertar ruta donde crear archivo
-archivo= CrearArchivo(ruta)
+
+textoArchivo = ""
+# textoArchivo_def = ""
 
 #Cargamos el archivo '.ui' diseñado mediante Qt Designer
 dlg=uic.loadUi("VoIp_SoftLab.ui")
@@ -470,8 +570,15 @@ dlg5.pushButton_2.clicked.connect(Paso6)
 
 dlg5.pushButton.clicked.connect(Paso7)
 
+dlg7.pushButton.clicked.connect(Paso7)
+
+# GuardarDatos(textoArchivo, Ruta_archivo)
+# ruta="/Users/mariaesperilla/Desktop/ARCHIVOS/Exportar3.txt" #Insertar ruta donde crear archivo
+
+
+
 
 
 dlg.show()
 app.exec()
-archivo.close()
+# archivo.close()
