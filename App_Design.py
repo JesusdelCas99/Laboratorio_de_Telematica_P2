@@ -161,6 +161,8 @@ def V_Paso6():
     
     global Codecs
     global Codecs_parametros
+    
+    Codecs=[]
             
     texto_Codec=dlg6.comboBox.currentText()
     index = TodosCodecs.index(texto_Codec)
@@ -766,7 +768,7 @@ def Paso6():
     global Codecs
     global Codecs_parametros
     
-    Codecs=[]
+    
     Codecs_parametros = np.zeros((1,10))
     
     conn = sql.connect('DataBase.db')
