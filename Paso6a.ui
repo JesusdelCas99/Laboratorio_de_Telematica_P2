@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>509</width>
-    <height>343</height>
+    <width>521</width>
+    <height>350</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -39,6 +39,19 @@
    </property>
    <property name="text">
     <string>Menú elección de Códec</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>290</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Calcular</string>
    </property>
   </widget>
  </widget>

@@ -11,6 +11,7 @@ import time
 from datetime import datetime, timedelta, date
 
 from PyQt5 import QtWidgets,uic
+from PyQt5.QtWidgets import *
 
 #Importamos modulos para computo cientifico
 import numpy as np
@@ -24,6 +25,84 @@ from Funciones import *
 
 
 ########################################################################### 
+
+def Comprobaciones():
+    #En esta función se comprueba que todos los parámetros introducidos por el usuario
+    #tienen sentido.
+    
+    Comprobacion=1 #Inicializo para el caso de que no haya ningún error
+    
+    if dlg.lineEdit.text().isdigit():
+        pass
+    else:
+        ShowMessage("Las empresas clientes debe ser un número entero.","Parámetros incorrectos")
+        Comprobacion=0
+        
+    if dlg.lineEdit_2.text().isdigit():
+        pass
+    else:
+        ShowMessage("Las líneas por cliente debe ser un número entero.","Parámetros incorrectos")
+        Comprobacion=0
+        
+    if dlg.lineEdit_4.text().isdigit():
+        pass
+    else:
+        ShowMessage("Los minutos por llamada deben ser un número entero.","Parámetros incorrectos")
+        Comprobacion=0
+    
+    if isProb(dlg.lineEdit_5.text()):
+        pass
+    else:
+        ShowMessage("La probabilidad de llamada debe ser un número entre 0 y 1.","Parámetros incorrectos")
+        Comprobacion=0
+        
+    if isFloat(dlg.lineEdit_7.text()):
+        pass
+    else:
+        ShowMessage("El ancho de banda de reserva debe ser un número.","Parámetros incorrectos")
+        Comprobacion=0
+        
+    if isFloat(dlg.lineEdit_3.text()):
+        pass
+    else:
+        ShowMessage("El ancho de banda del enlace SIPTRUNK debe ser un número.","Parámetros incorrectos")
+        Comprobacion=0
+    
+    if isProb(dlg.lineEdit_9.text()):
+        pass
+    else:
+        ShowMessage("La probabilidad de bloqueo debe ser un número entre 0 y 1.","Parámetros incorrectos")
+        Comprobacion=0
+     
+    if dlg.lineEdit_11.text().isdigit():
+        pass
+    else:
+        ShowMessage("El retardo de red debe ser un número entero.","Parámetros incorrectos")
+        Comprobacion=0
+        
+    if dlg.lineEdit_10.text().isdigit():
+        pass
+    else:
+        ShowMessage("El Jitter debe ser un número entero.","Parámetros incorrectos")
+        Comprobacion=0
+    
+    
+    return Comprobacion
+
+   
+
+def ShowMessage(Details,Fallo):
+    msg = QMessageBox()
+    msg.setIcon(QMessageBox.Critical)
+    msg.setText("Error")
+    msg.setInformativeText(Fallo)
+    msg.setWindowTitle("Error")
+    msg.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+    msg.setDetailedText(Details)
+    msg.exec_()
+
+
+
 def CrearArchivo(Ruta_archivo):
     
     print("Creando archivo")
@@ -75,6 +154,21 @@ def V_Paso3():
     
     dlg3.lineEdit_2.setText(str(1e3*R_final[index]).lstrip('[').rstrip(']') + " ms")
     dlg3.lineEdit_2.setReadOnly(True)
+    
+    
+def V_Paso6():
+    #Optimización
+    
+    global Codecs
+    global Codecs_parametros
+            
+    texto_Codec=dlg6.comboBox.currentText()
+    index = TodosCodecs.index(texto_Codec)
+    
+    Codecs.append(texto_Codec)
+    
+    print(index)
+    Codecs_parametros=TodosCodecs_parametros[index][:]
     
 
 def Codec_Show():
@@ -167,6 +261,7 @@ def Paso2():
     
     dlg2.comboBox.clear()
     
+          
     textoArchivo = ""
     textoArchivo += "\n===============Paso 2===============\n"
     textoArchivo += "\n---Parametros de entrada QoE---\n"
@@ -220,18 +315,15 @@ def Paso2():
           for j in range(1,11):             
               Codecs_parametros[z,j-1]=float(raw[j])
               
-          print("codec",Codecs_parametros[z])   
-          
-          print("Codecs validos",raw[0]) 
+
           textoArchivo +=  str(raw[0]) + "\n"
           z+=1
     
     dim=len(Codecs_parametros)
     
     if dim==0:
-        dlg_aviso.show()
-    else:
-        
+        ShowMessage("Ningún Codec cumple QoS excelente.", None)
+    elif (dim !=0) & Comprobaciones():        
         dlg_aviso.close() #Cerramos la pestaña de avisos en caso de que estuviese abierta
         dlg.close() #Cerramos la ventana principal
         dlg2.show() #Abrimos la ventana que nos proporciona los datos del paso 2
@@ -319,8 +411,7 @@ def Paso3():
     
     dlg3.comboBox.clear()
     
-    for i in range(dim):
-        dlg3.comboBox.addItem(Codecs[i])
+    dlg3.comboBox.addItems(Codecs)
     
     
     dlg3.lineEdit_11.setText(dlg.lineEdit_11.text() + " ms")
@@ -362,21 +453,18 @@ def Paso3():
         
         #Retraso de paquetizacion
         VPS=8*Codecs_parametros[i][4]/((Codecs_parametros[i][0])*1e3)
-        textoArchivo += "VPS=" + str(R_final[i]) + "\n" 
-        print("VPS",VPS)
+        textoArchivo += "VPS=" + str(R_final[i]) + "\n"         
         R_final[i]=VPS
         textoArchivo += "Retraso_paquetizacion=" + str(R_final[i]) + "\n" 
         
         #Retraso algoritmico
         R_final[i]=R_final[i]+n_look_ahead
         textoArchivo += "Retraso_algoritmico=" + str(R_final[i]) + "\n" 
-        print("Rfinal",R_final[i])
         
         #Tiempo de ejecucion de la compresion. Consideramos un 10% de CSI
         #por trama
         R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]*1e-3
         textoArchivo += "Consideramos Tiempo_ejecucion =" + str(R_final[i]) + "\n" 
-        print("Tejercucion",R_final[i])
         
         #Añadimos el retardo de red
         R_final[i]=R_final[i]+Retardo_red
@@ -673,8 +761,40 @@ def Paso6():
     dlg5.close()
     dlg6.show()
     
-    dlg6.comboBox.addItems(Codecs)
+    global TodosCodecs_parametros
+    global TodosCodecs
+    global dim
+    global Codecs
+    global Codecs_parametros
     
+    Codecs=[]
+    Codecs_parametros = np.zeros((1,10))
+    
+    conn = sql.connect('DataBase.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT * FROM Codecs_DataBase where MOS >=' + str(0))
+    records = cursor.fetchall()
+    
+    
+    TodosCodecs_parametros=np.zeros((len(records),10))
+    TodosCodecs=list()
+    dim=1
+        
+    
+    #Agrupo todos los codecs en una lista y sus parámetros en una matriz
+    z=0
+    
+    for raw in records:        
+          TodosCodecs.append(raw[0])
+          for j in range(1,11):             
+              TodosCodecs_parametros[z,j-1]=float(raw[j])
+    
+    
+    dlg6.comboBox.clear()
+    dlg6.comboBox.addItems(TodosCodecs)
+    
+    dlg6.comboBox.activated.connect(V_Paso6)
+       
 
 def Paso7():
     
@@ -726,8 +846,9 @@ dlg.lineEdit_9.setPlaceholderText("0-1")
 #Activamos el evento referente a la cabecera IPESEC 
 dlg.comboBox_5.activated.connect(V_Paso1) 
 
-dlg.pushButton.clicked.connect(Paso2) # Pops new window when pushed
+#Botones en las distintas ventanas que dan paso a una nueva.
 
+dlg.pushButton.clicked.connect(Paso2) 
 
 dlg2.pushButton.clicked.connect(Paso3)
 
@@ -745,6 +866,9 @@ dlg5.pushButton_2.clicked.connect(Paso6)
 
 
 dlg5.pushButton.clicked.connect(Paso7)
+
+
+dlg6.pushButton.clicked.connect(Paso3)
 
 
 dlg7.pushButton.clicked.connect(Paso7)

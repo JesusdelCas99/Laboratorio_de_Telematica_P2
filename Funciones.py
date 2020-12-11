@@ -67,4 +67,26 @@ def Erlang_B2(A,pb):
         
     return Canales
            
-               
+###########################################################################
+#Función para comprobrar si un string contiene un número, teniendo en cuenta
+#que este puede ser decimal
+    
+def isFloat(string):
+    try:
+        float(string)
+        return True
+    except:
+        return False
+    
+##########################################################################
+#Función para comprobrar si un string contiene una probabilidad, en formato
+#de 0 a 1
+      
+def isProb(string):
+    try:
+        if (float(string) <= 1) & (float(string) >= 0):        
+            return True
+        else:
+            return False
+    except:
+        return False         
