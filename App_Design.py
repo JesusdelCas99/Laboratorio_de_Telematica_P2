@@ -167,8 +167,8 @@ def V_Paso6():
     
     Codecs.append(texto_Codec)
     
-    print(index)
-    Codecs_parametros=TodosCodecs_parametros[index][:]
+   
+    Codecs_parametros[0][:]=TodosCodecs_parametros[index][:]
     
 
 def Codec_Show():
@@ -763,7 +763,6 @@ def Paso6():
     
     global TodosCodecs_parametros
     global TodosCodecs
-    global dim
     global Codecs
     global Codecs_parametros
     
@@ -788,6 +787,7 @@ def Paso6():
           TodosCodecs.append(raw[0])
           for j in range(1,11):             
               TodosCodecs_parametros[z,j-1]=float(raw[j])
+          z+=1
     
     
     dlg6.comboBox.clear()
@@ -877,3 +877,4 @@ dlg7.pushButton.clicked.connect(Paso7)
 dlg.show()
 app.exec()
 
+#https://www.tutorialspoint.com/pyqt/pyqt_qfiledialog_widget.htm
