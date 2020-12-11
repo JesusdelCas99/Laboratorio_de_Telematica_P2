@@ -53,7 +53,108 @@ def GuardarDatos(textoArchivo, Ruta_archivo):
     
     archivo.write(textoArchivo)
     archivo.close()
+
+def V_Paso1():
     
+    texto_Codec=dlg.comboBox_5.currentText()
+    
+    #En caso de seleccionar la opcion de IPESEC, mostrar la opcion de elegir
+    #la longitud de cabecera entre los valores teoricos posibles (50-57 Bytes)
+    
+    if texto_Codec=="IPSEC":
+        dlg.spinBox.setVisible(True)
+        dlg.label_9.setVisible(True)
+    else:
+        dlg.spinBox.setVisible(False)
+        dlg.label_9.setVisible(False)
+    
+def V_Paso3():
+    
+    texto_Codec=dlg3.comboBox.currentText()
+    index = Codecs.index(texto_Codec)
+    
+    dlg3.lineEdit_2.setText(str(1e3*R_final[index]).lstrip('[').rstrip(']') + " ms")
+    dlg3.lineEdit_2.setReadOnly(True)
+    
+
+def Codec_Show():
+    
+    global textoArchivo_def
+    
+    #Asignamos un valor inicial a esta variable, tal que si es '0' cumple,
+    #y si no, no cumple    
+    Nocumple=0
+    
+    texto_Codec=dlg5.comboBox.currentText()
+    index = Codecs.index(texto_Codec)
+    
+    dlg5.lineEdit.setText(Codecs[index])
+    dlg5.lineEdit.setReadOnly(True)
+    
+    #Mostramos por pantalla el MOS del primer Codec en cuestion
+    dlg5.lineEdit_6.setText(str(Codecs_parametros[index][3]))
+    dlg5.lineEdit_6.setReadOnly(True) 
+    
+    if Codecs_parametros[index][3]<MOS:
+        dlg5.lineEdit_2.setText("No cumple")
+        Nocumple=1
+    else:
+        dlg5.lineEdit_2.setText("Cumple")
+    dlg5.lineEdit_2.setReadOnly(True)
+    
+    
+    if R_final[index]>Retardo_total:
+        dlg5.lineEdit_3.setText("No cumple")
+        Nocumple=1
+    else:
+        dlg5.lineEdit_3.setText("Cumple")
+    dlg5.lineEdit_3.setReadOnly(True)
+    
+    
+    #Tal y como está planteado no se me ocurre forma de que se supere la
+    #probabilidad de bloqueo que introduce el usuario
+    dlg5.lineEdit_4.setText("Cumple")
+    dlg5.lineEdit_4.setReadOnly(True)        
+    
+    
+    if BW_SP[index] > Bandwidth:
+        dlg5.lineEdit_5.setText("No cumple")
+        Nocumple=1
+    else:
+        dlg5.lineEdit_5.setText("Cumple")
+    dlg5.lineEdit_5.setReadOnly(True)
+        
+
+    if Nocumple == 1:
+        
+        dlg5.pushButton.setVisible(False)
+        dlg5.line_7.setVisible(True)
+        dlg5.line_4.setVisible(True)
+        dlg5.line_9.setVisible(True)
+        dlg5.line_8.setVisible(True)
+        dlg5.label_7.setVisible(True)
+        dlg5.label_6.setVisible(True)
+        dlg5.pushButton_2.setVisible(True)
+        dlg5.pushButton_3.setVisible(True)
+        dlg5.frame_3.setVisible(True)
+        
+    else:
+        #Hacemos invisible la ventana de aviso de que el Codec no cumple
+        dlg5.line_7.setVisible(False)
+        dlg5.line_4.setVisible(False)
+        dlg5.line_9.setVisible(False)
+        dlg5.line_8.setVisible(False)
+        dlg5.label_7.setVisible(False)
+        dlg5.label_6.setVisible(False)
+        dlg5.pushButton_2.setVisible(False)
+        dlg5.pushButton_3.setVisible(False)
+        dlg5.frame_3.setVisible(False)
+        dlg5.pushButton.setVisible(True)
+
+    
+    textoArchivo_def += textoArchivo
+    
+
 def Paso0():
     
     dlg5.close()
@@ -62,17 +163,18 @@ def Paso0():
 
 def Paso2(): 
     
+    global textoArchivo
+    
     textoArchivo = ""
     textoArchivo += "\n===============Paso 2===============\n"
     textoArchivo += "\n---Parametros de entrada QoE---\n"
-     
-    dlg.close()
-    dlg2.show()   
+       
     
     global Codecs_parametros
     global Codecs
     global MOS
     global textoArchivo_def
+    global dim
     
     textoArchivo_def = ""
     
@@ -121,15 +223,26 @@ def Paso2():
           print("Codecs validos",raw[0]) 
           textoArchivo +=  str(raw[0]) + "\n"
           z+=1
-            
-       
-    dlg2.lineEdit_2.setText(Codecs[0])
-    dlg2.lineEdit_2.setReadOnly(True)        
-          
+    
+    dim=len(Codecs_parametros)
+    
+    if dim==0:
+        dlg_aviso.show()
+    else:
+        
+        dlg_aviso.close() #Cerramos la pestaña de avisos en caso de que estuviese abierta
+        dlg.close() #Cerramos la ventana principal
+        dlg2.show() #Abrimos la ventana que nos proporciona los datos del paso 2
+        
+        
+    for i in range(dim):   
+        dlg2.comboBox.addItem(Codecs[i])
+               
+              
     dlg2.lineEdit.setText(dlg.comboBox_2.currentText())
     dlg2.lineEdit.setReadOnly(True)  
-    
-    
+        
+        
     textoArchivo_def += textoArchivo
     
     
@@ -202,14 +315,14 @@ def Paso3():
     dlg2.close()
     dlg3.show() 
     
+    for i in range(dim):
+        dlg3.comboBox.addItem(Codecs[i])
     
-    dlg3.lineEdit.setText(Codecs[0])
-    dlg3.lineEdit.setReadOnly(True)
     
-    dlg3.lineEdit_11.setText(dlg.lineEdit_11.text())
+    dlg3.lineEdit_11.setText(dlg.lineEdit_11.text() + " ms")
     dlg3.lineEdit_11.setReadOnly(True) 
     
-    dlg3.lineEdit_10.setText(dlg.lineEdit_10.text())
+    dlg3.lineEdit_10.setText(dlg.lineEdit_10.text() + " ms")
     dlg3.lineEdit_10.setReadOnly(True) 
     
     dlg3.lineEdit_12.setText(str(Retardo_G114*1e3) + " ms")
@@ -244,7 +357,7 @@ def Paso3():
         textoArchivo += "\nRetardo_look_ahead=" + str(n_look_ahead) + "\n" 
         
         #Retraso de paquetizacion
-        VPS=Codecs_parametros[i][4]/((Codecs_parametros[i][0])*1e-3)
+        VPS=8*Codecs_parametros[i][4]/((Codecs_parametros[i][0])*1e3)
         textoArchivo += "VPS=" + str(R_final[i]) + "\n" 
         print("VPS",VPS)
         R_final[i]=VPS
@@ -257,7 +370,7 @@ def Paso3():
         
         #Tiempo de ejecucion de la compresion. Consideramos un 10% de CSI
         #por trama
-        R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]
+        R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]*1e-3
         textoArchivo += "Consideramos Tiempo_ejecucion =" + str(R_final[i]) + "\n" 
         print("Tejercucion",R_final[i])
         
@@ -267,10 +380,11 @@ def Paso3():
         
         
         #Retardo de decodificacion
-        R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]
+        R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]*1e-3
         textoArchivo += "Retardo de red ofrecido=" + str(R_final[i]) + "\n" 
         
-        #Retardo de buffer antijitter
+        #Retardo de buffer antijitter. Escogemos un numero entero de posibles
+        #paquetes en el buffer
         R_fin1=int((1.5*Jitter)/VPS)*VPS+R_final[i]
         R_fin2=int((2*Jitter)/VPS)*VPS+R_final[i]
         
@@ -293,8 +407,11 @@ def Paso3():
     
     textoArchivo += "VPS=" + str(VPS) + "\n" 
         
-    dlg3.lineEdit_2.setText(str(R_final[0]) + " ms")
+    dlg3.lineEdit_2.setText(str(1e3*R_final[0]).lstrip('[').rstrip(']') + " ms")
     dlg3.lineEdit_2.setReadOnly(True)
+    
+    
+    dlg3.comboBox.activated.connect(V_Paso3) 
            
       
     textoArchivo_def += textoArchivo   
@@ -338,7 +455,8 @@ def Paso4():
     dlg4.TraficoBHT.setText(str(BHT) + " Erlangs")
     dlg4.TraficoBHT.setReadOnly(True)
     
-    #Calculamos el numero de lineas en base a la funcion Erlang_B2
+    #Calculamos el numero de lineas en base a la funcion Erlang_B2 para el 
+    #primer Codec de la lista
     N_lineas=Erlang_B2(BHT,float(dlg.lineEdit_9.text()))
     textoArchivo += "Numero de lineas=" + str(N_lineas) + "\n"
     
@@ -352,7 +470,8 @@ def Paso4():
 def Paso5():
     
     global textoArchivo_def
-    # textoArchivo_def = ""
+    global BW_SP
+    #textoArchivo_def = ""
     
     textoArchivo = ""
     textoArchivo += "\n===============Paso 5===============\n"
@@ -400,7 +519,7 @@ def Paso5():
         textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
     elif P_Tuneles=='IPSEC':
         textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
-        P_Tuneles=float(dlg.SpinBox.text())
+        P_Tuneles=float(dlg.spinBox.text())
         textoArchivo += "P_Tuneles=" + str(P_Tuneles) + "\n"
     else:
         P_Tuneles=0
@@ -466,12 +585,12 @@ def Paso5():
             BW_SP[i]=BW_SP_RTP #Nos quedamos con RTP
         else:
             BW_SP[i]=BW_SP_cRTP #Nos quedamos con cRTP
+        
+        dlg5.comboBox.addItem(Codecs[i])
             
-            
-            
-            
-    #Ahora mismo mostramos como resultado el Primer Codec que cumple el MOS
-            
+    #adding action to combo box 
+    dlg5.comboBox.activated.connect(Codec_Show)       
+    
     dlg5.lineEdit.setText(Codecs[0])
     dlg5.lineEdit.setReadOnly(True)
     
@@ -495,8 +614,12 @@ def Paso5():
     #Tal y como está planteado no se me ocurre forma de que se supere la
     #probabilidad de bloqueo que introduce el usuario
     dlg5.lineEdit_4.setText("Cumple")
-    dlg5.lineEdit_4.setReadOnly(True)        
-    
+    dlg5.lineEdit_4.setReadOnly(True)  
+
+    #Mostramos por pantalla el MOS del primer Codec en cuestion
+    dlg5.lineEdit_6.setText(str(Codecs_parametros[0][3]))
+    dlg5.lineEdit_6.setReadOnly(True) 
+        
     
     if BW_SP[0] > Bandwidth:
         dlg5.lineEdit_5.setText("No cumple")
@@ -507,10 +630,32 @@ def Paso5():
         
 
     if Nocumple == 1:
-        dlg5.pushButton_2.show()
-        dlg5.pushButton_3.show()
-        dlg5.label_6.show()
-        dlg5.label_7.show()
+
+        dlg5.pushButton.setVisible(False)
+        dlg5.line_7.setVisible(True)
+        dlg5.line_4.setVisible(True)
+        dlg5.line_9.setVisible(True)
+        dlg5.line_8.setVisible(True)
+        dlg5.label_7.setVisible(True)
+        dlg5.label_6.setVisible(True)
+        dlg5.pushButton_2.setVisible(True)
+        dlg5.pushButton_3.setVisible(True)
+        dlg5.frame_3.setVisible(True)
+    else:
+        
+        #Hacemos invisible la ventana de aviso de que el Codec no cumple
+        dlg5.line_7.setVisible(False)
+        dlg5.line_4.setVisible(False)
+        dlg5.line_9.setVisible(False)
+        dlg5.line_8.setVisible(False)
+        dlg5.label_7.setVisible(False)
+        dlg5.label_6.setVisible(False)
+        dlg5.pushButton_2.setVisible(False)
+        dlg5.pushButton_3.setVisible(False)
+        dlg5.frame_3.setVisible(False)
+        dlg5.pushButton.setVisible(True)
+        
+        
 
     
     textoArchivo_def += textoArchivo
@@ -554,6 +699,8 @@ app=QtWidgets.QApplication([])
 #Cargamos el archivo '.ui' diseñado mediante Qt Designer
 dlg=uic.loadUi("VoIp_SoftLab.ui")
 
+dlg.spinBox.setVisible(False)
+dlg.label_9.setVisible(False)
     
 dlg2=uic.loadUi("Paso2.ui")
 dlg3=uic.loadUi("Paso3.ui")
@@ -561,13 +708,16 @@ dlg4=uic.loadUi("Paso4.ui")
 dlg5=uic.loadUi("Paso5.ui")
 dlg6=uic.loadUi("Paso6a.ui")
 dlg7=uic.loadUi("Paso7.ui")
+dlg_aviso=uic.loadUi("Aviso.ui")
 
 
 #Placeholders, ¿usar en otros campos?
 dlg.lineEdit_5.setPlaceholderText("Probabilidad entre 0-1")
 dlg.lineEdit_9.setPlaceholderText("0-1")
 
-#dlg.spinBox.hide()
+
+#Activamos el evento referente a la cabecera IPESEC 
+dlg.comboBox_5.activated.connect(V_Paso1) 
 
 dlg.pushButton.clicked.connect(Paso2) # Pops new window when pushed
 
@@ -586,7 +736,9 @@ dlg5.pushButton_3.clicked.connect(Paso0)
 
 dlg5.pushButton_2.clicked.connect(Paso6)
 
+
 dlg5.pushButton.clicked.connect(Paso7)
+
 
 dlg7.pushButton.clicked.connect(Paso7)
 

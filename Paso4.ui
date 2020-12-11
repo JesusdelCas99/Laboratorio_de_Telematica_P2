@@ -6,18 +6,133 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>566</width>
-    <height>425</height>
+    <width>362</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Paso 4: Número de líneas</string>
   </property>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>180</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Siguiente</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="labelBHT_2">
+   <property name="geometry">
+    <rect>
+     <x>58</x>
+     <y>22</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="font">
+    <font>
+     <pointsize>9</pointsize>
+     <weight>75</weight>
+     <bold>true</bold>
+    </font>
+   </property>
+   <property name="text">
+    <string>Número de líneas</string>
+   </property>
+  </widget>
+  <widget class="Line" name="line">
+   <property name="geometry">
+    <rect>
+     <x>21</x>
+     <y>30</y>
+     <width>20</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_2">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>140</y>
+     <width>301</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_4">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>30</y>
+     <width>20</width>
+     <height>131</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
+   </property>
+  </widget>
+  <widget class="Line" name="line_5">
+   <property name="geometry">
+    <rect>
+     <x>30</x>
+     <y>30</y>
+     <width>24</width>
+     <height>3</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="TraficoBHT">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>60</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_2">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>90</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="lineEdit_3">
+   <property name="geometry">
+    <rect>
+     <x>170</x>
+     <y>120</y>
+     <width>141</width>
+     <height>20</height>
+    </rect>
+   </property>
+  </widget>
   <widget class="QLabel" name="labelBHT">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>160</y>
+     <x>50</x>
+     <y>60</y>
      <width>55</width>
      <height>16</height>
     </rect>
@@ -29,8 +144,8 @@
   <widget class="QLabel" name="labelPb">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>186</y>
+     <x>50</x>
+     <y>90</y>
      <width>99</width>
      <height>16</height>
     </rect>
@@ -39,21 +154,11 @@
     <string>Probabilidad Bloqueo</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="TraficoBHT">
-   <property name="geometry">
-    <rect>
-     <x>215</x>
-     <y>160</y>
-     <width>211</width>
-     <height>20</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QLabel" name="label3">
    <property name="geometry">
     <rect>
-     <x>110</x>
-     <y>212</y>
+     <x>50</x>
+     <y>120</y>
      <width>57</width>
      <height>16</height>
     </rect>
@@ -62,58 +167,52 @@
     <string>Nº de líneas</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_3">
+  <widget class="Line" name="line_3">
    <property name="geometry">
     <rect>
-     <x>215</x>
-     <y>212</y>
-     <width>211</width>
-     <height>20</height>
+     <x>170</x>
+     <y>23</y>
+     <width>159</width>
+     <height>16</height>
     </rect>
    </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>50</y>
-     <width>317</width>
-     <height>19</height>
+     <x>29</x>
+     <y>30</y>
+     <width>301</width>
+     <height>131</height>
     </rect>
    </property>
-   <property name="font">
-    <font>
-     <family>Calibri</family>
-     <pointsize>12</pointsize>
-    </font>
+   <property name="styleSheet">
+    <string notr="true">background-color: rgb(234, 234, 234);</string>
    </property>
-   <property name="text">
-    <string>       PASO 4 (GOS)        ----&gt;     Número de Líneas </string>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
    </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
-   <property name="geometry">
-    <rect>
-     <x>215</x>
-     <y>186</y>
-     <width>211</width>
-     <height>20</height>
-    </rect>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
-   <property name="geometry">
-    <rect>
-     <x>470</x>
-     <y>360</y>
-     <width>75</width>
-     <height>23</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>NEXT</string>
-   </property>
-  </widget>
+  <zorder>frame</zorder>
+  <zorder>line_5</zorder>
+  <zorder>pushButton</zorder>
+  <zorder>labelBHT_2</zorder>
+  <zorder>line</zorder>
+  <zorder>line_2</zorder>
+  <zorder>line_4</zorder>
+  <zorder>TraficoBHT</zorder>
+  <zorder>lineEdit_2</zorder>
+  <zorder>lineEdit_3</zorder>
+  <zorder>labelBHT</zorder>
+  <zorder>labelPb</zorder>
+  <zorder>label3</zorder>
+  <zorder>line_3</zorder>
  </widget>
  <resources/>
  <connections/>
