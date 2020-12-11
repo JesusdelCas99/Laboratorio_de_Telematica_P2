@@ -159,11 +159,13 @@ def Paso0():
     
     dlg5.close()
     dlg.show()
-
+    
 
 def Paso2(): 
     
     global textoArchivo
+    
+    dlg2.comboBox.clear()
     
     textoArchivo = ""
     textoArchivo += "\n===============Paso 2===============\n"
@@ -314,6 +316,8 @@ def Paso3():
     #Mostramos la ventana referente al paso 3
     dlg2.close()
     dlg3.show() 
+    
+    dlg3.comboBox.clear()
     
     for i in range(dim):
         dlg3.comboBox.addItem(Codecs[i])
@@ -561,6 +565,9 @@ def Paso5():
     #Calculamos el ancho de banda para los dos posibles casos: RTP y cRTP
     #CASO 1: RTP: Tendremos en cuenta el checksum (4bytes)
     BW_SP=np.zeros((dim,1))
+    
+    #Reseteamos el comBox
+    dlg5.comboBox.clear()
     
     for i in range(dim):
         
