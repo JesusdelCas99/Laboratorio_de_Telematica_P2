@@ -175,7 +175,7 @@ def V_Paso6():
 
 def Codec_Show():
     
-    global textoArchivo_def
+    global indexCodec
     
     #Asignamos un valor inicial a esta variable, tal que si es '0' cumple,
     #y si no, no cumple    
@@ -183,6 +183,9 @@ def Codec_Show():
     
     texto_Codec=dlg5.comboBox.currentText()
     index = Codecs.index(texto_Codec)
+    
+    indexCodec = index
+    
     
     dlg5.lineEdit.setText(Codecs[index])
     dlg5.lineEdit.setReadOnly(True)
@@ -247,8 +250,7 @@ def Codec_Show():
         dlg5.frame_3.setVisible(False)
         dlg5.pushButton.setVisible(True)
 
-    
-    textoArchivo_def += textoArchivo
+
     
 
 def Paso0():
@@ -260,6 +262,7 @@ def Paso0():
 def Paso2(): 
     
     global textoArchivo
+    global textoArchivo_def
     
     dlg2.comboBox.clear()
     
@@ -346,7 +349,8 @@ def Paso3():
     global VPS
     global R_fin1
     global R_fin2
-    
+    global texto_r_final
+    global texto_r_final_v
        
     
     Jitter=float(dlg.lineEdit_11.text())*1e-3
@@ -417,6 +421,9 @@ def Paso3():
     #Inicializamos vector para el numero de paquetes del buffer antijitter
     Storage_P=np.zeros((dim,1))
     
+    texto_r_final_v = ["" for x in range(dim)]
+    
+    # texto_r_final=""
     #Calculo del retardo total (Origen+Red+Destino)
     for i in range(dim):
         
@@ -427,19 +434,33 @@ def Paso3():
         VPS=8*Codecs_parametros[i][4]/((Codecs_parametros[i][0])*1e3)
         R_final[i]=VPS
         
+        texto_r_final = ""
+        
+        texto_r_final += "Codec " + str(Codecs_parametros[i][0]);
+        
+        texto_r_final += "Retraso paquetizacion" + str(R_final[i])+ "\n"
+        
         #Retraso algoritmico
         R_final[i]=R_final[i]+n_look_ahead
+        Retraso_algoritmico=R_final[i]
+        
+        texto_r_final += "Retraso algoritmico" + str(R_final[i])+ "\n"
         
         #Tiempo de ejecucion de la compresion. Consideramos un 10% de CSI
         #por trama
         R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]*1e-3
         
+        texto_r_final += "Tiempo ejecucion de la compresion" + str(R_final[i])+"\n"
+        
         #Añadimos el retardo de red
         R_final[i]=R_final[i]+Retardo_red
         
-        
+        texto_r_final += "Añadimos retardo de red:" + str(R_final[i])+"\n"
         #Retardo de decodificacion
         R_final[i]=R_final[i]+0.1*Codecs_parametros[i][2]*1e-3
+        texto_r_final += "Retardo de decodificacion" + str(R_final[i])+"\n"
+        
+        
         
         #Retardo de buffer antijitter. Escogemos un numero entero de posibles
         #paquetes en el buffer
@@ -455,11 +476,15 @@ def Paso3():
             
             #Numero de paquetes a almacenar por el buffer antijitter
             Storage_P[i]=int((2*Jitter)/VPS)
+            texto_r_final += "Numero de paquetes a almacenar" + str(Storage_P[i])+"\n"
         else:
             R_final[i]=R_fin1
             
             #Numero de paquetes a almacenar por el buffer antijitter
             Storage_P[i]=int((1.5*Jitter)/VPS)
+            texto_r_final += "Numero de paquetes a almacenar" + str(Storage_P[i])+"\n"
+    
+        texto_r_final_v[i] = texto_r_final
     
         
     dlg3.lineEdit_2.setText(str(1e3*R_final[0]).lstrip('[').rstrip(']') + " ms")
@@ -528,6 +553,14 @@ def Paso5():
     global BW_SP_cRTP
 
     global BW_SP
+    
+    global L_RTP_vector
+    global PPS_vector
+    global BW_SP_RTP_vector
+    global L_cRTP_vector
+    global Bw_llamada_vector
+    global BW_SP_cRTP_vector
+    
 
     
     #Mostramos la ventana referente al paso 5
@@ -593,19 +626,34 @@ def Paso5():
     #CASO 1: RTP: Tendremos en cuenta el checksum (4bytes)
     BW_SP=np.zeros((dim,1))
     
+    L_RTP_vector=np.zeros((dim,1))
+    PPS_vector=np.zeros((dim,1))
+    BW_SP_RTP_vector=np.zeros((dim,1))
+    L_cRTP_vector=np.zeros((dim,1))
+    Bw_llamada_vector=np.zeros((dim,1))
+    BW_SP_cRTP_vector=np.zeros((dim,1))
+    
+    
+    
     #Reseteamos el comBox
     dlg5.comboBox.clear()
     
     for i in range(dim):
         
         L_RTP=8*(Codecs_parametros[i][4]+L_RTP_Cabeceras)
+        L_RTP_vector[i]=L_RTP
         PPS=(Codecs_parametros[i][0]*1e3)/(8*Codecs_parametros[i][4])
+        PPS_vector[i]=PPS
         Bw_llamada=L_RTP*PPS*(1+B_W_percentage)
         BW_SP_RTP=N_lineas*Bw_llamada
+        BW_SP_RTP_vector[i]=BW_SP_RTP 
         
         L_cRTP=8*(Codecs_parametros[i][4]+L_cRTP_Cabeceras)
+        L_cRTP_vector[i]=L_cRTP
         Bw_llamada=L_cRTP*PPS*(1+B_W_percentage)
+        Bw_llamada_vector[i]=Bw_llamada
         BW_SP_cRTP=N_lineas*Bw_llamada
+        BW_SP_cRTP_vector[i]=BW_SP_cRTP
         
         #Nos quedaremos con el ancho de banda que se encuentre por debajo
         #del establecido por el cliente para el SIP Trunk. En caso de que 
@@ -665,8 +713,7 @@ def Paso5():
 
     if Nocumple == 1:
 
-        # dlg5.pushButton.setVisible(False)
-        dlg5.pushButton.setVisible(True) #Cambiar
+        dlg5.pushButton.setVisible(False)
         dlg5.line_7.setVisible(True)
         dlg5.line_4.setVisible(True)
         dlg5.line_9.setVisible(True)
@@ -739,15 +786,7 @@ def Paso7():
     dlg6.close()
     dlg7.show()
     
-    #dlg7.pushButton.hide()
-    # Ruta_archivo=str(dlg7.lineEdit_paso7.text())
-    
-    # if Ruta_archivo != '':
-    #     CrearArchivo(Ruta_archivo)
-    #     GuardarDatos(textoArchivo_def, Ruta_archivo)
-    # print("La ruta es:",Ruta_archivo)
-    
-    
+        
     textoArchivo = ""
     textoArchivo += "\n===============Paso 2===============\n"
         
@@ -756,7 +795,8 @@ def Paso7():
         
     textoArchivo += "\n---Codecs validos---\n"
         
-        # textoArchivo +=  str(raw[0]) + "\n" #Entrar esto!!!!
+    for codec in Codecs:        
+          textoArchivo += str(codec) + "\n"
         
     textoArchivo += "\n===============Paso 3===============\n"
     
@@ -772,15 +812,19 @@ def Paso7():
     textoArchivo += "Retardo_total=" + str(Retardo_total) + "\n"
     textoArchivo += "\nRetardo_look_ahead=" + str(n_look_ahead) + "\n"
     textoArchivo += "VPS=" + str(VPS) + "\n" 
-        # textoArchivo += "Retraso_paquetizacion=" + str(R_final[i]) + "\n" 
-        # textoArchivo += "Retraso_algoritmico=" + str(R_final[i]) + "\n" 
-        # textoArchivo += "Consideramos Tiempo_ejecucion =" + str(R_final[i]) + "\n" 
-        # textoArchivo += "Añadiendo el retardo de red=" + str(R_final[i]) + "\n" 
-        # textoArchivo += "Retardo de red ofrecido=" + str(R_final[i]) + "\n" 
-    textoArchivo += "Retardo antijitter 1 =" + str(R_fin1) + "\n" 
-    textoArchivo += "Retardo antijitter 2 =" + str(R_fin2) + "\n" 
-        # textoArchivo += "Numero de paquetes a almacenar=" + str(Storage_P[i]) + "\n" 
-        
+    
+    indiceCodec = 0
+    
+    try:
+        indiceCodec = indexCodec
+    except:
+        indiceCodec = 0
+    
+    textoArchivo += "\nPara codec: " + str(Codecs[indiceCodec])+ "\n\n"
+    textoArchivo += texto_r_final_v[indiceCodec] 
+
+
+
     textoArchivo += "\n===============Paso 4===============\n"
         
     textoArchivo += "\n---Parametros de entrada ----\n\n"
@@ -795,7 +839,8 @@ def Paso7():
         
     textoArchivo += "Busy Hour Traffic=" + str(BHT) + "\n"
     textoArchivo += "Numero de lineas=" + str(N_lineas) + "\n"
-        
+    
+    
     textoArchivo += "\n===============Paso 5===============\n"
         
     textoArchivo += "\n---Parametros de entrada ----\n\n"
@@ -806,16 +851,60 @@ def Paso7():
     textoArchivo += "P_Enlace=" + str(P_Enlace) + "\n"
         
     textoArchivo += "\n---Resultados Parciales ----\n\n"
-        
+    
     textoArchivo += "L_RTP_Cabeceras=" + str(L_RTP_Cabeceras) + "\n"
-    textoArchivo += "L_cRTP_Cabeceras=" + str(L_cRTP_Cabeceras) + "\n"
-    textoArchivo += "L_RTP=" + str(L_RTP) + "\n"
-    textoArchivo += "PPS=" + str(PPS) + "\n"
-    textoArchivo += "BW_llamada=" + str(Bw_llamada) + "\n"
-    textoArchivo += "BW_SP_RTP=" + str(BW_SP_RTP) + "\n"
-    textoArchivo += "L_cRTP=" + str(L_cRTP) + "\n"
-        # textoArchivo += "Bw_llamada=" + str(Bw_llamada) + "\n" #Este esta mal!!
-    textoArchivo += "BW_SP_cRTP=" + str(BW_SP_cRTP) + "\n"
+    textoArchivo += "L_cRTP_Cabeceras=" + str(L_cRTP_Cabeceras) + "\n\n"
+    
+
+    
+    
+    textoArchivo += "\nPara codec: " + str(Codecs[indiceCodec])+ "\n\n"
+    textoArchivo += "L_RTP=" + str(L_RTP_vector[indiceCodec]) + "\n"
+    textoArchivo += "PPS=" + str(PPS_vector[indiceCodec]) + "\n"
+    textoArchivo += "BW_SP_RTP=" + str(BW_SP_RTP_vector[indiceCodec]) + "\n"
+    textoArchivo += "L_cRTP=" + str(L_cRTP_vector[indiceCodec]) + "\n"
+    textoArchivo += "Bw_llamada=" + str(Bw_llamada_vector[indiceCodec]) + "\n"
+    textoArchivo += "BW_SP_cRTP=" + str(BW_SP_cRTP_vector[indiceCodec]) + "\n"
+    
+    if BW_SP_RTP<=Bandwidth:
+        textoArchivo += "Nos quedamos con RTP, BW_SP=" + str(BW_SP[indiceCodec]) + "\n\n"
+
+    else:
+        textoArchivo += "Nos quedamos con cRTP, BW_SP= " + str(BW_SP[indiceCodec]) + "\n\n"
+    
+
+    
+    if BW_SP_RTP<=Bandwidth:
+        textoArchivo += "Nos quedamos con RTP, BW_SP=" + str(BW_SP[indiceCodec]) + "\n\n"
+
+    else:
+
+        textoArchivo += "Nos quedamos con cRTP, BW_SP= " + str(BW_SP[indiceCodec]) + "\n\n"
+    
+    
+    
+    if Codecs_parametros[0][3]<MOS:
+        textoArchivo += "\nQoE: NO CUMPLE" 
+        # Nocumple=1
+    else:
+        textoArchivo += "\nQoE: CUMPLE" 
+
+    
+    if R_final[0]>Retardo_total:
+        textoArchivo += "\nQoS: NO CUMPLE" 
+
+    else:
+        textoArchivo += "\nQoSt: NO CUMPLE" 
+
+    textoArchivo += "\nGoS: CUMPLE" 
+    
+    if BW_SP[0] > Bandwidth:
+        textoArchivo += "\nBW_St: NO CUMPLE" 
+        # Nocumple=1
+    else:
+        textoArchivo += "\nBW_St: CUMPLE" 
+        
+    textoArchivo += "\n========================================"
     
 
 def openSaveDialog():
@@ -832,7 +921,6 @@ def openSaveDialog():
    CrearArchivo(file[0])
    
    Paso7()
-   print("textoArchivo",textoArchivo)
    GuardarDatos(textoArchivo, ruta_creada) 
    dlg7.close()
 
