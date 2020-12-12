@@ -921,8 +921,11 @@ def openSaveDialog():
    CrearArchivo(file[0])
    
    Paso7()
-   GuardarDatos(textoArchivo, ruta_creada) 
-   dlg7.close()
+   if ruta_creada=='':
+       pass
+   else:
+       GuardarDatos(textoArchivo, ruta_creada) 
+       dlg7.close()
 
  
            
@@ -976,7 +979,7 @@ dlg5.pushButton_3.clicked.connect(Paso0)
 dlg5.pushButton_2.clicked.connect(Paso6)
 
 
-dlg5.pushButton.clicked.connect(Paso7)
+dlg5.pushButton.clicked.connect(openSaveDialog)
 
 
 dlg6.pushButton.clicked.connect(Paso3)
@@ -984,13 +987,13 @@ dlg6.pushButton.clicked.connect(Paso3)
 
 # dlg7.pushButton.clicked.connect(Paso7)
 
-dlg5.pushButton.clicked.connect(Paso7)
+# dlg5.pushButton.clicked.connect(Paso7)
 
 
 mainWindow=QMainWindow()
 widget=QWidget()
 
-dlg7.pushButton2.clicked.connect(openSaveDialog)
+# dlg7.pushButton2.clicked.connect(openSaveDialog)
 
 
 dlg.show()
