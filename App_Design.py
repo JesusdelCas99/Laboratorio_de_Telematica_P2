@@ -29,7 +29,6 @@ import pandas as pd
 #Importamos el modulo 'funciones.py' diseñadas
 from Funciones import *
 
-import arquitectura
 
 ########################################################################### 
 
@@ -256,7 +255,6 @@ def Codec_Show():
         dlg5.pushButton.setVisible(True)
 
 
-
     
 
 def Paso0():
@@ -267,7 +265,6 @@ def Paso0():
     
 
 def Paso2(): 
-    dlg8.close()
     
     global textoArchivo
     global textoArchivo_def
@@ -911,25 +908,12 @@ def openSaveDialog():
        GuardarDatos(textoArchivo, ruta_creada) 
        
 
-def Imagen():
-    
-    dlg.close()
-    
-    Nc=float(dlg.lineEdit.text())
-    NI=float(dlg.lineEdit_2.text())
-    Bandwidth=(float(dlg.lineEdit_3.text()))*1e6
-    P_Enlace=dlg.comboBox_4.currentText()
-    
-    dlg8.show()
-    dlg8.lineEdit.setText(str(NI))
-    dlg8.lineEdit_2.setText(str(Nc))
-    dlg8.lineEdit_5.setText(str(Nc))
-    dlg8.lineEdit_3.setText(str(Bandwidth))
-    dlg8.lineEdit_4.setText(str(P_Enlace))
+ 
            
 ###########################################################################
 ################## PROGRAMACION BACK-END ##################################
 ###########################################################################
+
                             
 app=QtWidgets.QApplication([])
 
@@ -946,7 +930,7 @@ dlg4=uic.loadUi("Paso4.ui")
 dlg5=uic.loadUi("Paso5.ui")
 dlg6=uic.loadUi("Paso6a.ui")
 dlg_aviso=uic.loadUi("Aviso.ui")
-dlg8=uic.loadUi("ArquitecturadeRed1.ui")
+
 
 #Placeholders, ¿usar en otros campos?
 dlg.lineEdit_5.setPlaceholderText("Probabilidad entre 0-1")
@@ -957,9 +941,8 @@ dlg.lineEdit_9.setPlaceholderText("0-1")
 dlg.comboBox_5.activated.connect(V_Paso1) 
 
 #Botones en las distintas ventanas que dan paso a una nueva.
-dlg.pushButton.clicked.connect(Imagen) 
-# dlg.pushButton.clicked.connect(Paso2) 
-dlg8.pushButton_2.clicked.connect(Paso2) 
+
+dlg.pushButton.clicked.connect(Paso2) 
 
 dlg2.pushButton.clicked.connect(Paso3)
 
@@ -982,7 +965,7 @@ dlg5.pushButton.clicked.connect(openSaveDialog)
 dlg6.pushButton.clicked.connect(Paso3)
 
 
-
+# dlg7.pushButton.clicked.connect(Paso7)
 
 dlg5.pushButton.clicked.connect(Paso7)
 
@@ -990,15 +973,10 @@ dlg5.pushButton.clicked.connect(Paso7)
 mainWindow=QMainWindow()
 widget=QWidget()
 
-
+# dlg7.pushButton2.clicked.connect(openSaveDialog)
 
 
 dlg.show()
 app.exec()
 
 #https://www.tutorialspoint.com/pyqt/pyqt_qfiledialog_widget.htm
-                            
-
-
-
-
