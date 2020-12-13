@@ -1,4 +1,0 @@
-
-
-
-He tenido siempre en cuenta el checksum como 4Bytes, sea cual sea el paquete
