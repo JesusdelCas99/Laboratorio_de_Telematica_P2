@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="arquitectura">
+    <file>fotoprueba.jpg</file>
+    <file>Paso1.png</file>
+  </qresource>
+</RCC>
