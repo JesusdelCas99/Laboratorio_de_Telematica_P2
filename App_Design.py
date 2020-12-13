@@ -2,7 +2,10 @@
 """
 Created on Wed Nov 25 15:00:46 2020
 
-@author: SoftLabs
+@author: Jesús del Castillo Cabrera
+         Sergio Fernández Morales
+         María Esperilla Mesías
+         Martín Siles Reche
 """
 
 #Importamos libreria para obtener la fecha actual

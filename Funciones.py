@@ -2,7 +2,10 @@
 """
 Created on Sat Nov 28 00:48:39 2020
 
-@author: SoftLabs
+@author: Jesús del Castillo Cabrera
+         Sergio Fernández Morales
+         María Esperilla Mesías
+         Martín Siles Reche
 """
 
 import numpy as np
